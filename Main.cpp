@@ -1,17 +1,66 @@
-#include "Display.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+
+#include "DisplaySystem.h"
+
+using namespace std;
+using namespace Display;
+
+void AddValueToArray(string*& _array, const int _arraySize, string _value)
+{
+	//construit un tab _size + 1
+	string* _newArray = new string[_arraySize + 1];
+
+	//init le nouveau tableau de toutes les anciennes valeurs
+	for (int _index = 0; _index < _arraySize; _index++)
+	{
+		_newArray[_index] = _array[_index];
+	}
+
+	//on affecte à la dernière addresse la nouvelle valeur
+	_newArray[_arraySize] = _value;
+
+	//désallouer l'ancien tableau
+	delete[] _array;
+
+	//retourne le nouveau tableau
+	/*return _newArray*/;
+	_array = _newArray;
+}
+
+void DemoThomas()
+{
+	ifstream _stream = ifstream("Thomas.txt");
+	string _text;
+	int _index = 0;
+	string* _grid = nullptr;
+	while (getline(_stream, _text))
+	{
+		AddValueToArray(_grid, _index, _text);
+		_index++;
+	}
+
+	DisplayCenterMultiLine(_grid, _index);
+
+	_stream.close();
+}
 
 void DemoGrid()
 {
-	string* _grid = new string[25];
-	for (u_int _row = 0; _row < 25; _row++)
+	ifstream _stream = ifstream("O3D.txt");
+	string _text;
+	int _index = 0;
+	string* _grid = nullptr;
+	while (getline(_stream, _text))
 	{
-		_grid[_row] = "......................................................";
+		AddValueToArray(_grid, _index, _text);
+		_index++;
 	}
 
-	DisplayRainbowCenterMultiLine(_grid, 25);
+	DisplayRainbowCenterMultiLine(_grid, _index);
 
-	delete[] _grid;
-
+	_stream.close();
 }
 
 void DemoText()
@@ -39,10 +88,11 @@ void Demo()
 	{
 		"Choisissez une démo :",
 		"",
-		"1- Grille Arc-en-ciel",
-		"2- Texte Simple      ",
-		"3- Texte Multiple    ",
-		"4- Quitter           ",
+		"1- O3D Arc-en-ciel",
+		"2- ASCII Art      ",
+		"3- Texte Simple   ",
+		"4- Texte Multiple ",
+		"5- Quitter        ",
 	};
 	int _value;
 	DisplayCenterMultiLineWithInput(_texts, size(_texts), _value);
@@ -53,12 +103,15 @@ void Demo()
 		DemoGrid();
 		break;
 	case '2':
-		DemoText();
+		DemoThomas();
 		break;
 	case '3':
-		DemoText2();
+		DemoText();
 		break;
 	case '4':
+		DemoText2();
+		break;
+	case '5':
 		system("cls");
 		return;
 		break;
