@@ -42,7 +42,7 @@ void DisplayCenterLine(const string& _text, const Coord& _padding = { 0, 0 }, co
 /// </summary>
 /// <param name="_text">Le texte à afficher</param>
 /// <param name="_padding">Décale l'affichage du centre</param>
-void DisplayCenterLineWithInput(const string& _text, const Coord& _padding = { 0, 0 }, const int _exitKey = 27);
+void DisplayCenterLineWithInput(const string& _text, const Coord& _padding, int& _input);
 
 /// <summary>
 /// Permet d'afficher au centre de la console des lignes de textes avec la possibilité de décaler l'affichage du centre (padding)

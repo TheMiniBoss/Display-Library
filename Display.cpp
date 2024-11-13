@@ -25,13 +25,13 @@ Coord GetCenterConsole()
 	return { _columns, _rows };
 }
 
-bool CheckConsoleSize(Coord& _center, Coord& _previousCenter, const string& _text)
+bool CheckConsoleSize(Coord& _center, Coord& _previousCenter, const string& _text, const int _size = 1)
 {
 	const string& _errorText = "Agrandissez la taille de la console !";
 	_center = GetCenterConsole();
 	if (_previousCenter.x != _center.x || _previousCenter.y != _center.y) system("cls");
 
-	if (_center.x < _text.size() || _center.y < 1)
+	if (_center.x < _text.size() || _center.y < _size)
 	{
 		if (_errorText.size() > _center.x)
 		{
@@ -95,7 +95,7 @@ void DisplayCenterMultiLine(const string* _textArray, const u_int& _size, const 
 	{
 		for (u_int _index = 0; _index < _size; _index++)
 		{
-			if (CheckConsoleSize(_center, _previousCenter, _textArray[_index])) continue;
+			if (CheckConsoleSize(_center, _previousCenter, _textArray[_index], _size)) continue;
 			SetCursorPosition(((_center.x + _padding.x) - u_int(_textArray[_index].size())) / 2, (_center.y + (2 * ((_padding.y - _size) / 2 + _index))) / 2);
 			cout << _textArray[_index];
 			if (_kbhit())
@@ -116,7 +116,7 @@ void DisplayCenterMultiLineWithInput(const string* _textArray, const u_int& _siz
 	{
 		for (u_int _index = 0; _index < _size; _index++)
 		{
-			if (CheckConsoleSize(_center, _previousCenter, _textArray[_index])) continue;
+			if (CheckConsoleSize(_center, _previousCenter, _textArray[_index], _size)) continue;
 			SetCursorPosition(((_center.x + _padding.x) - u_int(_textArray[_index].size())) / 2, (_center.y + (2 * ((_padding.y - _size) / 2 + _index))) / 2);
 			cout << _textArray[_index];
 			if (_kbhit())
@@ -158,7 +158,7 @@ void DisplayRainbowCenterMultiLine(const string* _textArray, const u_int& _size,
 	{
 		for (u_int _index = 0; _index < _size; _index++)
 		{
-			if (CheckConsoleSize(_center, _previousCenter, _textArray[_index])) continue;
+			if (CheckConsoleSize(_center, _previousCenter, _textArray[_index], _size)) continue;
 			SetCursorPosition(((_center.x + _padding.x) - u_int(_textArray[_index].size())) / 2, (_center.y + (2 * ((_padding.y - _size) / 2 + _index))) / 2);
 			cout << (_sync ? RainbowText(_textArray[_index]) : RainbowChar(_textArray[_index]));
 
@@ -180,7 +180,7 @@ void DisplayRainbowCenterMultiLineWithInput(const string* _textArray, const u_in
 	{
 		for (u_int _index = 0; _index < _size; _index++)
 		{
-			if (CheckConsoleSize(_center, _previousCenter, _textArray[_index])) continue;
+			if (CheckConsoleSize(_center, _previousCenter, _textArray[_index], _size)) continue;
 			SetCursorPosition(((_center.x + _padding.x) - u_int(_textArray[_index].size())) / 2, (_center.y + (2 * ((_padding.y - _size) / 2 + _index))) / 2);
 			cout << (_sync ? RainbowText(_textArray[_index]) : RainbowChar(_textArray[_index]));
 
