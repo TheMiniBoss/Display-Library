@@ -3,22 +3,22 @@
 namespace TMB.Display
 {
 
-    public enum ETextColorMode { Text, Background, RainbowText, RainbowBackground, BlinkText, BlinkBackground }
+    public enum EMode { Text, Background, BlinkText, BlinkBackground }
 
     public class Color
     {
-        public enum EColorPreset { Red, LightRed, Purple, LightPurple, Orange, Yellow, White, Gray, Dark };
+        public enum EPreset { Red, LightRed, Purple, LightPurple, Orange, Yellow, White, Gray, Dark };
 
         public int R { get; set; } = 0;
         public int G { get; set; } = 0;
         public int B { get; set; } = 0;
 
-        public ETextColorMode Mode { get; set; } = ETextColorMode.Text;
-        public EColorPreset Preset { get; set; } = EColorPreset.White;
+        public EMode Mode { get; set; } = EMode.Text;
+        public EPreset Preset { get; set; } = EPreset.White;
 
         public Color() { R = G = B = 0; }
 
-        public Color(EColorPreset _preset)
+        public Color(EPreset _preset)
         {
             Preset = _preset;
             SetColorFromPreset();
@@ -28,37 +28,37 @@ namespace TMB.Display
         {
             switch (Preset)
             {
-                case EColorPreset.Red:
+                case EPreset.Red:
                     R = 255; G = 0; B = 0;
                     break;
-                case EColorPreset.LightRed:
+                case EPreset.LightRed:
                     R = 255; G = 128; B = 128;
                     break;
-                case EColorPreset.Purple:
+                case EPreset.Purple:
                     R = 128; G = 0; B = 128;
                     break;
-                case EColorPreset.LightPurple:
+                case EPreset.LightPurple:
                     R = 255; G = 128; B = 255;
                     break;
-                case EColorPreset.Orange:
+                case EPreset.Orange:
                     R = 255; G = 165; B = 0;
                     break;
-                case EColorPreset.Yellow:
+                case EPreset.Yellow:
                     R = 255; G = 255; B = 0;
                     break;
-                case EColorPreset.White:
+                case EPreset.White:
                     R = 255; G = 255; B = 255;
                     break;
-                case EColorPreset.Gray:
+                case EPreset.Gray:
                     R = 128; G = 128; B = 128;
                     break;
-                case EColorPreset.Dark:
+                case EPreset.Dark:
                     R = 32; G = 32; B = 32;
                     break;
             }
         }
 
-        public Color(int _r, int _g, int _b, ETextColorMode _mode = ETextColorMode.Text)
+        public Color(int _r, int _g, int _b, EMode _mode = EMode.Text)
         {
             R = _r;
             G = _g;
@@ -68,9 +68,9 @@ namespace TMB.Display
 
         public override string ToString()
         {
-            if (Mode == ETextColorMode.Text)
+            if (Mode == EMode.Text)
                 return $"\x1b[38;2;{R};{G};{B}m"; // foreground
-            else if (Mode == ETextColorMode.Background)
+            else if (Mode == EMode.Background)
                 return $"\x1b[48;2;{R};{G};{B}m"; // background
             return $"R: {R}, G: {G}, B: {B}";
         }
@@ -96,6 +96,8 @@ namespace TMB.Display
                 Interpolate(_start.B, _end.B)
             );
         }
+
+        [Obsolete]
         private static Color ClampRainbow2D(int _index, int _maxDisplayChar)
         {
             if (_maxDisplayChar == 0) return new Color(0, 255, 0);
@@ -143,7 +145,7 @@ namespace TMB.Display
         /// <param name="_mode">Text color mode</param>
         /// <param name="_colors">Gradient colors</param>
         /// <returns></returns>
-        public static string PrintGradient(string _text, ETextColorMode _mode = ETextColorMode.Text, params Color[] _colors)
+        public static string PrintGradient(string _text, EMode _mode = EMode.Text, params Color[] _colors)
         {
             int _size = _text.Length;
             string _newText = "";
@@ -154,7 +156,7 @@ namespace TMB.Display
                 _color.Mode = _mode;
                 _newText += _color.ToString() + _text[i];
             }
-            if (_mode == ETextColorMode.BlinkText || _mode == ETextColorMode.BlinkBackground)
+            if (_mode == EMode.BlinkText || _mode == EMode.BlinkBackground)
             {
                 return BLINK + _newText + RESET;
             }
@@ -167,7 +169,7 @@ namespace TMB.Display
         /// <summary>
         /// Display anchor positions for SetCursorPositionWithAnchors method
         /// </summary>
-        public enum EDisplayAnchors { TopLeft, TopCenter, TopRight, CenterLeft, Center, CenterRight, BottomLeft, BottomCenter, BottomRight }
+        public enum EAnchors { TopLeft, TopCenter, TopRight, CenterLeft, Center, CenterRight, BottomLeft, BottomCenter, BottomRight }
 
         /// <summary>
         /// Writes text to the console with gradient colors
@@ -175,7 +177,7 @@ namespace TMB.Display
         /// <param name="_value">String value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void Write(string? _value, ETextColorMode _mode = ETextColorMode.Text, params Color[] _colors)
+        public static void Write(string? _value, EMode _mode, params Color[] _colors)
         {
             string _output = Gradient.PrintGradient(_value ?? string.Empty, _mode, _colors);
             Console.Write(_output);
@@ -187,7 +189,7 @@ namespace TMB.Display
         /// <param name="_value">Object value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void Write(object? _value, ETextColorMode _mode = ETextColorMode.Text, params Color[] _colors)
+        public static void Write(object? _value, EMode _mode, params Color[] _colors)
         {
             string _output = Gradient.PrintGradient(_value?.ToString() ?? string.Empty, _mode, _colors);
             Console.Write(_output);
@@ -199,7 +201,7 @@ namespace TMB.Display
         /// <param name="_value">Ulong value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void Write(ulong _value, ETextColorMode _mode = ETextColorMode.Text, params Color[] _colors)
+        public static void Write(ulong _value, EMode _mode, params Color[] _colors)
         {
             string _output = Gradient.PrintGradient(_value.ToString(), _mode, _colors);
             Console.Write(_output);
@@ -211,7 +213,7 @@ namespace TMB.Display
         /// <param name="_value">Long value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void Write(long _value, ETextColorMode _mode = ETextColorMode.Text, params Color[] _colors)
+        public static void Write(long _value, EMode _mode, params Color[] _colors)
         {
             string _output = Gradient.PrintGradient(_value.ToString(), _mode, _colors);
             Console.Write(_output);
@@ -223,7 +225,7 @@ namespace TMB.Display
         /// <param name="_value">Uint value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void Write(uint _value, ETextColorMode _mode = ETextColorMode.Text, params Color[] _colors)
+        public static void Write(uint _value, EMode _mode, params Color[] _colors)
         {
             string _output = Gradient.PrintGradient(_value.ToString(), _mode, _colors);
             Console.Write(_output);
@@ -235,7 +237,7 @@ namespace TMB.Display
         /// <param name="_value">Int value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void Write(int _value, ETextColorMode _mode = ETextColorMode.Text, params Color[] _colors)
+        public static void Write(int _value, EMode _mode, params Color[] _colors)
         {
             string _output = Gradient.PrintGradient(_value.ToString(), _mode, _colors);
             Console.Write(_output);
@@ -247,7 +249,7 @@ namespace TMB.Display
         /// <param name="_value">Float value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void Write(float _value, ETextColorMode _mode = ETextColorMode.Text, params Color[] _colors)
+        public static void Write(float _value, EMode _mode, params Color[] _colors)
         {
             string _output = Gradient.PrintGradient(_value.ToString(), _mode, _colors);
             Console.Write(_output);
@@ -259,7 +261,7 @@ namespace TMB.Display
         /// <param name="_value">Decimal value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void Write(decimal _value, ETextColorMode _mode = ETextColorMode.Text, params Color[] _colors)
+        public static void Write(decimal _value, EMode _mode, params Color[] _colors)
         {
             string _output = Gradient.PrintGradient(_value.ToString(), _mode, _colors);
             Console.Write(_output);
@@ -271,7 +273,7 @@ namespace TMB.Display
         /// <param name="_value">Double value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void Write(double _value, ETextColorMode _mode = ETextColorMode.Text, params Color[] _colors)
+        public static void Write(double _value, EMode _mode, params Color[] _colors)
         {
             string _output = Gradient.PrintGradient(_value.ToString(), _mode, _colors);
             Console.Write(_output);
@@ -283,7 +285,7 @@ namespace TMB.Display
         /// <param name="_value">List of characters value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void Write(char[]? _buffer, ETextColorMode _mode = ETextColorMode.Text, params Color[] _colors)
+        public static void Write(char[]? _buffer, EMode _mode, params Color[] _colors)
         {
             string _output = Gradient.PrintGradient(new string(_buffer), _mode, _colors);
             Console.Write(_output);
@@ -295,7 +297,7 @@ namespace TMB.Display
         /// <param name="_value">Char value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void Write(char _buffer, ETextColorMode _mode = ETextColorMode.Text, params Color[] _colors)
+        public static void Write(char _buffer, EMode _mode, params Color[] _colors)
         {
             string _output = Gradient.PrintGradient(_buffer.ToString(), _mode, _colors);
             Console.Write(_output);
@@ -307,7 +309,7 @@ namespace TMB.Display
         /// <param name="_value">Boolean value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void Write(bool _value, ETextColorMode _mode = ETextColorMode.Text, params Color[] _colors)
+        public static void Write(bool _value, EMode _mode, params Color[] _colors)
         {
             string _output = Gradient.PrintGradient(_value.ToString(), _mode, _colors);
             Console.Write(_output);
@@ -319,7 +321,7 @@ namespace TMB.Display
         /// <param name="_value">String value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void WriteLine(string? _value, ETextColorMode _mode, params Color[] _colors)
+        public static void WriteLine(string? _value, EMode _mode, params Color[] _colors)
         {
             Write(_value, _mode, _colors);
             Console.WriteLine();
@@ -331,7 +333,7 @@ namespace TMB.Display
         /// <param name="_value">Object value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void WriteLine(object? _value, ETextColorMode _mode, params Color[] _colors)
+        public static void WriteLine(object? _value, EMode _mode, params Color[] _colors)
         {
             Write(_value, _mode, _colors);
             Console.WriteLine();
@@ -343,7 +345,7 @@ namespace TMB.Display
         /// <param name="_value">Ulong value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void WriteLine(ulong _value, ETextColorMode _mode, params Color[] _colors)
+        public static void WriteLine(ulong _value, EMode _mode, params Color[] _colors)
         {
             Write(_value, _mode, _colors);
             Console.WriteLine();
@@ -355,7 +357,7 @@ namespace TMB.Display
         /// <param name="_value">Long value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void WriteLine(long _value, ETextColorMode _mode, params Color[] _colors)
+        public static void WriteLine(long _value, EMode _mode, params Color[] _colors)
         {
             Write(_value, _mode, _colors);
             Console.WriteLine();
@@ -367,7 +369,7 @@ namespace TMB.Display
         /// <param name="_value">Uint value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void WriteLine(uint _value, ETextColorMode _mode, params Color[] _colors)
+        public static void WriteLine(uint _value, EMode _mode, params Color[] _colors)
         {
             Write(_value, _mode, _colors);
             Console.WriteLine();
@@ -379,7 +381,7 @@ namespace TMB.Display
         /// <param name="_value">Int value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void WriteLine(int _value, ETextColorMode _mode, params Color[] _colors)
+        public static void WriteLine(int _value, EMode _mode, params Color[] _colors)
         {
             Write(_value, _mode, _colors);
             Console.WriteLine();
@@ -391,7 +393,7 @@ namespace TMB.Display
         /// <param name="_value">Float value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void WriteLine(float _value, ETextColorMode _mode, params Color[] _colors)
+        public static void WriteLine(float _value, EMode _mode, params Color[] _colors)
         {
             Write(_value, _mode, _colors);
             Console.WriteLine();
@@ -403,7 +405,7 @@ namespace TMB.Display
         /// <param name="_value">Decimal value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void WriteLine(decimal _value, ETextColorMode _mode, params Color[] _colors)
+        public static void WriteLine(decimal _value, EMode _mode, params Color[] _colors)
         {
             Write(_value, _mode, _colors);
             Console.WriteLine();
@@ -415,7 +417,7 @@ namespace TMB.Display
         /// <param name="_value">Double value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void WriteLine(double _value, ETextColorMode _mode, params Color[] _colors)
+        public static void WriteLine(double _value, EMode _mode, params Color[] _colors)
         {
             Write(_value, _mode, _colors);
             Console.WriteLine();
@@ -427,7 +429,7 @@ namespace TMB.Display
         /// <param name="_value">List of characters value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void WriteLine(char[]? _buffer, ETextColorMode _mode, params Color[] _colors)
+        public static void WriteLine(char[]? _buffer, EMode _mode, params Color[] _colors)
         {
             Write(_buffer, _mode, _colors);
             Console.WriteLine();
@@ -439,7 +441,7 @@ namespace TMB.Display
         /// <param name="_value">Char value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void WriteLine(char _buffer, ETextColorMode _mode, params Color[] _colors)
+        public static void WriteLine(char _buffer, EMode _mode = EMode.Text, params Color[] _colors)
         {
             Write(_buffer, _mode, _colors);
             Console.WriteLine();
@@ -451,7 +453,7 @@ namespace TMB.Display
         /// <param name="_value">Boolean value to display</param>
         /// <param name="_mode">The text color mode</param>
         /// <param name="_colors">The gradient colors</param>
-        public static void WriteLine(bool _value, ETextColorMode _mode, params Color[] _colors)
+        public static void WriteLine(bool _value, EMode _mode = EMode.Text, params Color[] _colors)
         {
             Write(_value, _mode, _colors);
             Console.WriteLine();
@@ -534,45 +536,45 @@ namespace TMB.Display
         /// <param name="_anchors">The anchor position</param>
         /// <param name="_paddingX">The padding on the X (column)</param>
         /// <param name="_paddingY">The padding on the Y (row)</param>
-        public static void SetCursorPositionWithAnchors(string _text, EDisplayAnchors _anchors, int _paddingX = 0, int _paddingY = 0)
+        public static void SetCursorPositionWithAnchors(string _text, EAnchors _anchors, int _paddingX = 0, int _paddingY = 0)
         {
             Coordinates windowSize = GetWindowSize();
             Coordinates coordinates = new Coordinates(0, 0);
             switch (_anchors)
             {
-                case EDisplayAnchors.TopLeft:
+                case EAnchors.TopLeft:
                     coordinates.X = _paddingX;
                     coordinates.Y = _paddingY;
                     break;
-                case EDisplayAnchors.TopCenter:
+                case EAnchors.TopCenter:
                     coordinates.X = ((windowSize.X - _text.Length) / 2) + _paddingX;
                     coordinates.Y = _paddingY;
                     break;
-                case EDisplayAnchors.TopRight:
+                case EAnchors.TopRight:
                     coordinates.X = (windowSize.X - _text.Length) - _paddingX;
                     coordinates.Y = _paddingY;
                     break;
-                case EDisplayAnchors.CenterLeft:
+                case EAnchors.CenterLeft:
                     coordinates.X = _paddingX;
                     coordinates.Y = (windowSize.Y / 2) + _paddingY;
                     break;
-                case EDisplayAnchors.Center:
+                case EAnchors.Center:
                     coordinates.X = ((windowSize.X - _text.Length) / 2) + _paddingX;
                     coordinates.Y = (windowSize.Y / 2) + _paddingY;
                     break;
-                case EDisplayAnchors.CenterRight:
+                case EAnchors.CenterRight:
                     coordinates.X = (windowSize.X - _text.Length) - _paddingX;
                     coordinates.Y = (windowSize.Y / 2) + _paddingY;
                     break;
-                case EDisplayAnchors.BottomLeft:
+                case EAnchors.BottomLeft:
                     coordinates.X = _paddingX;
                     coordinates.Y = (windowSize.Y - 1) - _paddingY;
                     break;
-                case EDisplayAnchors.BottomCenter:
+                case EAnchors.BottomCenter:
                     coordinates.X = ((windowSize.X - _text.Length) / 2) + _paddingX;
                     coordinates.Y = (windowSize.Y - 1) - _paddingY;
                     break;
-                case EDisplayAnchors.BottomRight:
+                case EAnchors.BottomRight:
                     coordinates.X = (windowSize.X - _text.Length) - _paddingX;
                     coordinates.Y = (windowSize.Y - 1) - _paddingY;
                     break;
@@ -653,7 +655,7 @@ namespace TMB.Display
             {
                 Random _rand = new Random();
                 Color _color = new Color(_rand.Next(32, 255), _rand.Next(32, 255), _rand.Next(32, 255));
-                _color.Mode = ETextColorMode.Text;
+                _color.Mode = EMode.Text;
                 _newText += _color.ToString() + _text[i];
             }
             return _newText + "\x1b[0m"; // Reset ANSI color
@@ -663,7 +665,7 @@ namespace TMB.Display
         {
             Random _rand = new Random();
             Color _color = new Color(_rand.Next(32, 255), _rand.Next(32, 255), _rand.Next(32, 255));
-            _color.Mode = ETextColorMode.Text;
+            _color.Mode = EMode.Text;
             return _color.ToString() + _text + "\x1b[0m"; // Reset ANSI color
         }
 
