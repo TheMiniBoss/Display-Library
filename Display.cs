@@ -68,9 +68,9 @@ namespace TMB.Display
 
         public override string ToString()
         {
-            if (Mode == EMode.Text)
+            if (Mode == EMode.Text || Mode == EMode.BlinkText)
                 return $"\x1b[38;2;{R};{G};{B}m"; // foreground
-            else if (Mode == EMode.Background)
+            else if (Mode == EMode.Background || Mode == EMode.BlinkBackground)
                 return $"\x1b[48;2;{R};{G};{B}m"; // background
             return $"R: {R}, G: {G}, B: {B}";
         }
